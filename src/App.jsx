@@ -45,8 +45,9 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <nav className="bg-white dark:bg-gray-800 shadow-sm">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+      {/* Header with full viewport width */}
+      <header className="w-screen bg-white dark:bg-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
@@ -68,10 +69,11 @@ function App() {
             </div>
           </div>
         </div>
-      </nav>
+      </header>
 
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
+      {/* Main content - centered with padding */}
+      <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <TextAnalyzer onAnalysisComplete={handleAnalysisComplete} />
             <ImageAnalyzer onAnalysisComplete={handleAnalysisComplete} />
@@ -83,7 +85,8 @@ function App() {
         </div>
       </main>
 
-      <footer className="bg-white dark:bg-gray-800 shadow-sm mt-8">
+      {/* Footer with full viewport width */}
+      <footer className="w-screen bg-white dark:bg-gray-800 shadow-sm mt-auto">
         <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
           <p className="text-center text-sm text-gray-500 dark:text-gray-400">
             ©{new Date().getFullYear()} Cyberbullying Detector. All rights

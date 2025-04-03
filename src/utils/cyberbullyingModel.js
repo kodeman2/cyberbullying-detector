@@ -1,4 +1,4 @@
-import * as tf from "@tensorflow/tfjs";
+vimport * as tf from "@tensorflow/tfjs";
 
 // Expanded word-based features with contemporary social media terms
 const harmfulWords = [
@@ -76,80 +76,63 @@ const normalizeText = (text) => {
     .replace(/\$/g, 's')
     .replace(/@/g, 'a')
     .replace(/\*/g, '')
-    // eslint-disable-next-line
     .replace(/\!/g, 'i')
-    // Remove common punctuation used to bypass filters
-    // eslint-disable-next-line
-    .replace(/[\.\,\;\:\-\_\+\=\'\"\`\~\|\[\]\(\)\{\}\<\>\?\/\\\s]+/g, ' ')
+    // Remove common punctuation used to bypass filters, but preserve word boundaries
+    .replace(/[\.\,\;\:\-\_\+\=\'\"\`\~\|\[\]\(\)\{\}\<\>\?\/\\]+/g, ' ')
     .trim();
 };
 
 // Enhanced pattern matching to detect cyberbullying even with punctuation
 const harmfulPatterns = [
-  // Direct insults with flexible punctuation handling
-  /(?:you\s*(?:are|'?re))\s*(?:a\s*)?(?:piece\s*of|pile\s*of|fucking|damn|so|just)?\s*(?:shit|crap|trash|garbage|scum|filth|worthless|useless|pathetic|disgusting|gross|vile|repulsive|revolting|sickening|nasty|filthy|dirty|rotten|corrupt|evil|wicked|sinful|damned|cursed)/i,
+  // Direct insults with flexible punctuation handling - added word boundaries (\b)
+  /\b(?:you\s*(?:are|'?re))\s*(?:a\s*)?(?:piece\s*of|pile\s*of|fucking|damn|so|just)?\s*(?:shit|crap|trash|garbage|scum|filth|worthless|useless|pathetic|disgusting|gross|vile|repulsive|revolting|sickening|nasty|filthy|dirty|rotten|corrupt|evil|wicked|sinful|damned|cursed)\b/i,
   
-  // Self-harm encouragement with punctuation flexibility
-  // eslint-disable-next-line
-  /(?:go|just\s*go|go\s*ahead\s*and|why\s*don'?t\s*you)\s*(?:k[i1!]ll\s*(?:yo)?[u\*]r?s[e3]lf|d[i1!][e3]|jump\s*off|hang\s*(?:yo)?[u\*]r?s[e3]lf|[e3]nd\s*(?:[i1!]t|(?:yo)?[u\*]r?s[e3]lf)|c[o0]mm[i1!]t\s*s[u\*][i1!]c[i1!]d[e3]|k[iy]s)/i,
+  // Self-harm encouragement with punctuation flexibility - added word boundaries
+  /\b(?:go|just\s*go|go\s*ahead\s*and|why\s*don'?t\s*you)\s*(?:k[i1!]ll\s*(?:yo)?[u\*]r?s[e3]lf|d[i1!][e3]|jump\s*off|hang\s*(?:yo)?[u\*]r?s[e3]lf|[e3]nd\s*(?:[i1!]t|(?:yo)?[u\*]r?s[e3]lf)|c[o0]mm[i1!]t\s*s[u\*][i1!]c[i1!]d[e3]|k[iy]s)\b/i,
 
-  // Degrading patterns with punctuation handling
-  // eslint-disable-next-line
-  /(?:you\s*(?:are|'?re))\s*(?:n[o0]th[i1!]ng|w[o0]rthl[e3]ss|[u\*]s[e3]l[e3]ss|p[a4]th[e3]t[i1!]c|d[i1!]sg[u\*]st[i1!]ng|gr[o0]ss|v[i1!]l[e3]|r[e3]p[u\*]ls[i1!]v[e3]|r[e3]v[o0]lt[i1!]ng|s[i1!]ck[e3]n[i1!]ng|n[a4]sty|f[i1!]lthy|d[i1!]rty|r[o0]tt[e3]n|c[o0]rr[u\*]pt|[e3]v[i1!]l|w[i1!]ck[e3]d|s[i1!]nf[u\*]l|d[a4]mn[e3]d|c[u\*]rs[e3]d)/i,
+  // Degrading patterns with punctuation handling - added word boundaries
+  /\b(?:you\s*(?:are|'?re))\s*(?:n[o0]th[i1!]ng|w[o0]rthl[e3]ss|[u\*]s[e3]l[e3]ss|p[a4]th[e3]t[i1!]c|d[i1!]sg[u\*]st[i1!]ng|gr[o0]ss|v[i1!]l[e3]|r[e3]p[u\*]ls[i1!]v[e3]|r[e3]v[o0]lt[i1!]ng|s[i1!]ck[e3]n[i1!]ng|n[a4]sty|f[i1!]lthy|d[i1!]rty|r[o0]tt[e3]n|c[o0]rr[u\*]pt|[e3]v[i1!]l|w[i1!]ck[e3]d|s[i1!]nf[u\*]l|d[a4]mn[e3]d|c[u\*]rs[e3]d)\b/i,
   
-  // Threatening patterns with punctuation flexibility
-  // eslint-disable-next-line
-  /(?:[i1!]\s*(?:w[i1!]ll|[a4]m\s*g[o0][i1!]ng\s*t[o0]|w[a4]nn[a4]|'?ll))\s*(?:k[i1!]ll|h[u\*]rt|h[a4]rm|[a4]tt[a4]ck|d[e3]str[o0]y|r[u\*][i1!]n|b[e3][a4]t\s*(?:[u\*]p)?|f[u\*]ck\s*(?:[u\*]p)?|[e3]nd|c[a4]nc[e3]l|d[o0]xx|sw[a4]t|h[a4]ck|t[a4]k[e3]\s*d[o0]wn)\s*y[o0][u\*]/i,
+  // Threatening patterns with punctuation flexibility - added word boundaries
+  /\b(?:[i1!]\s*(?:w[i1!]ll|[a4]m\s*g[o0][i1!]ng\s*t[o0]|w[a4]nn[a4]|'?ll))\s*(?:k[i1!]ll|h[u\*]rt|h[a4]rm|[a4]tt[a4]ck|d[e3]str[o0]y|r[u\*][i1!]n|b[e3][a4]t\s*(?:[u\*]p)?|f[u\*]ck\s*(?:[u\*]p)?|[e3]nd|c[a4]nc[e3]l|d[o0]xx|sw[a4]t|h[a4]ck|t[a4]k[e3]\s*d[o0]wn)\s*y[o0][u\*]\b/i,
   
-  // Hope/wish for harm with punctuation handling
-  // eslint-disable-next-line
-  /(?:[i1!]\s*(?:w[i1!]sh|h[o0]p[e3]|pr[a4]y))\s*(?:y[o0][u\*]\s*(?:d[i1!][e3]|g[e3]t\s*c[a4]nc[e3]r|g[e3]t\s*[a4][i1!]ds|g[e3]t\s*h[u\*]rt|s[u\*]ff[e3]r|[a4]r[e3]\s*d[e3][a4]d|d[i1!]s[a4]pp[e3][a4]r|l[o0]s[e3]\s*[e3]v[e3]ryth[i1!]ng))/i,
+  // Hope/wish for harm with punctuation handling - added word boundaries
+  /\b(?:[i1!]\s*(?:w[i1!]sh|h[o0]p[e3]|pr[a4]y))\s*(?:y[o0][u\*]\s*(?:d[i1!][e3]|g[e3]t\s*c[a4]nc[e3]r|g[e3]t\s*[a4][i1!]ds|g[e3]t\s*h[u\*]rt|s[u\*]ff[e3]r|[a4]r[e3]\s*d[e3][a4]d|d[i1!]s[a4]pp[e3][a4]r|l[o0]s[e3]\s*[e3]v[e3]ryth[i1!]ng))\b/i,
   
-  // Social media specific patterns
-  // eslint-disable-next-line
-  /(?:n[o0]\s*[o0]n[e3]\s*(?:l[o0]v[e3]s|c[a4]r[e3]s\s*[a4]b[o0][u\*]t|l[i1!]k[e3]s|w[a4]nts|n[e3][e3]ds)\s*y[o0][u\*])/i,
-  // eslint-disable-next-line
-  /(?:(?:y[o0][u\*]r|[u\*]r)\s*(?:s[o0]\s*)?(?:[u\*]gly|f[a4]t|d[u\*]mb|p[a4]th[e3]t[i1!]c|cr[i1!]ng[e3]|[a4]nn[o0]y[i1!]ng|[i1!]rr[i1!]t[a4]t[i1!]ng))/i,
+  // Social media specific patterns - added word boundaries
+  /\b(?:n[o0]\s*[o0]n[e3]\s*(?:l[o0]v[e3]s|c[a4]r[e3]s\s*[a4]b[o0][u\*]t|l[i1!]k[e3]s|w[a4]nts|n[e3][e3]ds)\s*y[o0][u\*])\b/i,
+  /\b(?:(?:y[o0][u\*]r|[u\*]r)\s*(?:s[o0]\s*)?(?:[u\*]gly|f[a4]t|d[u\*]mb|p[a4]th[e3]t[i1!]c|cr[i1!]ng[e3]|[a4]nn[o0]y[i1!]ng|[i1!]rr[i1!]t[a4]t[i1!]ng))\b/i,
   
-  // Ratio, canceled, and modern social media attack patterns
-  // eslint-disable-next-line
-  /(?:r[a4]t[i1!][o0]'?d|g[e3]t\s*r[a4]t[i1!][o0]'?d|[i1!]'?m\s*g[o0]nn[a4]\s*r[a4]t[i1!][o0]\s*y[o0][u\*])/i,
-  // eslint-disable-next-line
-  /(?:y[o0][u\*]'?r[e3]\s*c[a4]nc[e3]l[e3]d|[i1!]'?m\s*g[o0][i1!]ng\s*t[o0]\s*c[a4]nc[e3]l\s*y[o0][u\*]|g[e3]t\s*c[a4]nc[e3]l[e3]d)/i,
+  // Ratio, canceled, and modern social media attack patterns - added word boundaries
+  /\b(?:r[a4]t[i1!][o0]'?d|g[e3]t\s*r[a4]t[i1!][o0]'?d|[i1!]'?m\s*g[o0]nn[a4]\s*r[a4]t[i1!][o0]\s*y[o0][u\*])\b/i,
+  /\b(?:y[o0][u\*]'?r[e3]\s*c[a4]nc[e3]l[e3]d|[i1!]'?m\s*g[o0][i1!]ng\s*t[o0]\s*c[a4]nc[e3]l\s*y[o0][u\*]|g[e3]t\s*c[a4]nc[e3]l[e3]d)\b/i,
   
-  // Identity attacks with flexible punctuation
-  // eslint-disable-next-line
-  /(?:y[o0][u\*]'?r[e3]\s*(?:[a4]\s*)?(?:r[a4]c[i1!]st|s[e3]x[i1!]st|h[o0]m[o0]ph[o0]b[e3]|tr[a4]nsph[o0]b[e3]|n[a4]z[i1!]|f[a4]sc[i1!]st|b[i1!]g[o0]t))/i,
+  // Identity attacks with flexible punctuation - added word boundaries
+  /\b(?:y[o0][u\*]'?r[e3]\s*(?:[a4]\s*)?(?:r[a4]c[i1!]st|s[e3]x[i1!]st|h[o0]m[o0]ph[o0]b[e3]|tr[a4]nsph[o0]b[e3]|n[a4]z[i1!]|f[a4]sc[i1!]st|b[i1!]g[o0]t))\b/i,
   
-  // Exclusion and isolation attacks
-  // eslint-disable-next-line
-  /(?:n[o0]\s*[o0]n[e3]\s*w[o0][u\*]ld\s*m[i1!]ss\s*y[o0][u\*]|th[e3]\s*w[o0]rld\s*w[o0][u\*]ld\s*b[e3]\s*b[e3]tt[e3]r\s*w[i1!]th[o0][u\*]t\s*y[o0][u\*])/i,
+  // Exclusion and isolation attacks - added word boundaries
+  /\b(?:n[o0]\s*[o0]n[e3]\s*w[o0][u\*]ld\s*m[i1!]ss\s*y[o0][u\*]|th[e3]\s*w[o0]rld\s*w[o0][u\*]ld\s*b[e3]\s*b[e3]tt[e3]r\s*w[i1!]th[o0][u\*]t\s*y[o0][u\*])\b/i,
   
-  // Mental health stigmatization
-  // eslint-disable-next-line
-  /(?:y[o0][u\*]'?r[e3]\s*(?:[a4]\s*)?(?:cr[a4]zy|[i1!]ns[a4]n[e3]|m[e3]nt[a4]l|ps?ych[o0]|sch[i1!]z[o0]|[a4][u\*]t[i1!]st[i1!]c|sp[e3]c[i1!][a4]l\s*n[e3][e3]ds|r[e3]t[a4]rd[e3]d|sp[e3]rg))/i,
+  // Mental health stigmatization - added word boundaries
+  /\b(?:y[o0][u\*]'?r[e3]\s*(?:[a4]\s*)?(?:cr[a4]zy|[i1!]ns[a4]n[e3]|m[e3]nt[a4]l|ps?ych[o0]|sch[i1!]z[o0]|[a4][u\*]t[i1!]st[i1!]c|sp[e3]c[i1!][a4]l\s*n[e3][e3]ds|r[e3]t[a4]rd[e3]d|sp[e3]rg))\b/i,
   
-  // Self-worth attacks
-  // eslint-disable-next-line
-  /(?:y[o0][u\*]'?r[e3]\s*(?:[a4]\s*)?(?:w[a4]st[e3]\s*[o0]f\s*(?:sp[a4]c[e3]|[a4][i1!]r|l[i1!]f[e3]|t[i1!]m[e3]|[e3]ff[o0]rt|r[e3]s[o0][u\*]rc[e3]s)))/i,
+  // Self-worth attacks - added word boundaries
+  /\b(?:y[o0][u\*]'?r[e3]\s*(?:[a4]\s*)?(?:w[a4]st[e3]\s*[o0]f\s*(?:sp[a4]c[e3]|[a4][i1!]r|l[i1!]f[e3]|t[i1!]m[e3]|[e3]ff[o0]rt|r[e3]s[o0][u\*]rc[e3]s)))\b/i,
   
-  // Multi-part attacks (combining insults with threats)
-  // eslint-disable-next-line
-  /(?:y[o0][u\*]'?r[e3]\s*(?:[a4]\s*)?(?:p[i1!][e3]c[e3]\s*[o0]f\s*sh[i1!]t|b[i1!]tch|wh[o0]r[e3]|sl[u\*]t|[a4]ssh[o0]l[e3]|d[i1!]cj?k|j[e3]rk|m[o0]r[o0]n|[i1!]d[i1!][o0]t))\s*[a4]nd\s*(?:[i1!]\s*h[o0]p[e3]\s*y[o0][u\*]\s*(?:d[i1!][e3]|r[o0]t\s*[i1!]n\s*h[e3]ll|b[u\*]rn\s*[i1!]n\s*h[e3]ll|s[u\*]ff[e3]r))/i,
+  // Multi-part attacks (combining insults with threats) - added word boundaries
+  /\b(?:y[o0][u\*]'?r[e3]\s*(?:[a4]\s*)?(?:p[i1!][e3]c[e3]\s*[o0]f\s*sh[i1!]t|b[i1!]tch|wh[o0]r[e3]|sl[u\*]t|[a4]ssh[o0]l[e3]|d[i1!]cj?k|j[e3]rk|m[o0]r[o0]n|[i1!]d[i1!][o0]t))\s*[a4]nd\s*(?:[i1!]\s*h[o0]p[e3]\s*y[o0][u\*]\s*(?:d[i1!][e3]|r[o0]t\s*[i1!]n\s*h[e3]ll|b[u\*]rn\s*[i1!]n\s*h[e3]ll|s[u\*]ff[e3]r))\b/i,
   
-  // Leet-speak patterns for common attacks
-  /(?:kys|k\s*y\s*s|k\.\s*y\.\s*s\.)/i,  // Kill yourself
-  /(?:gtfo|g\s*t\s*f\s*o|g\.\s*t\.\s*f\.\s*o\.)/i,  // Get the f*** out
-  /(?:stfu|s\s*t\s*f\s*u|s\.\s*t\.\s*f\.\s*u\.)/i,  // Shut the f*** up
-  /(?:kms|k\s*m\s*s|k\.\s*m\.\s*s\.)/i,  // Kill myself (often used in a way that can be triggering)
+  // Leet-speak patterns for common attacks - added word boundaries
+  /\b(?:kys|k\s*y\s*s|k\.\s*y\.\s*s\.)\b/i,  // Kill yourself
+  /\b(?:gtfo|g\s*t\s*f\s*o|g\.\s*t\.\s*f\.\s*o\.)\b/i,  // Get the f*** out
+  /\b(?:stfu|s\s*t\s*f\s*u|s\.\s*t\.\s*f\.\s*u\.)\b/i,  // Shut the f*** up
+  /\b(?:kms|k\s*m\s*s|k\.\s*m\.\s*s\.)\b/i,  // Kill myself (often used in a way that can be triggering)
   
-  // Patterns to detect when someone repeats hostile words for emphasis
-  // eslint-disable-next-line
-  /(?:d[i1!][e3]\s*d[i1!][e3]\s*d[i1!][e3]|k[i1!]ll\s*y[o0][u\*]rs[e3]lf\s*k[i1!]ll\s*y[o0][u\*]rs[e3]lf)/i,
+  // Patterns to detect when someone repeats hostile words for emphasis - added word boundaries
+  /\b(?:d[i1!][e3]\s*d[i1!][e3]\s*d[i1!][e3]|k[i1!]ll\s*y[o0][u\*]rs[e3]lf\s*k[i1!]ll\s*y[o0][u\*]rs[e3]lf)\b/i,
   
-  // Patterns with emoji substitutions (represented as text here)
-  // eslint-disable-next-line
-  /(?:y[o0][u\*]\s*sh[o0][u\*]ld\s*:knife:|:skull:|\(skull\)|\(knife\))/i,
+  // Patterns with emoji substitutions (represented as text here) - added word boundaries
+  /\b(?:y[o0][u\*]\s*sh[o0][u\*]ld\s*:knife:|:skull:|\(skull\)|\(knife\))\b/i,
 ];
 
 // Function to detect emoji substitutions in text that might be used for cyberbullying
@@ -232,13 +215,14 @@ export class CyberbullyingModel {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
-  // Helper method to safely create flexible word patterns
+  // Helper method to safely create flexible word patterns with word boundaries
   _createFlexibleWordPattern(word) {
     // Safely escape the characters and create a pattern that allows punctuation between letters
-    const flexiblePattern = word.split('').map(char => 
+    // but requires word boundaries at start and end
+    const flexiblePattern = '\\b' + word.split('').map(char => 
       // Escape special regex characters in the letter
       this._escapeRegExp(char) + '[\\s\\.,;:\\-_]*'
-    ).join('');
+    ).join('') + '\\b';
     
     // Create and return the regex pattern
     return new RegExp(flexiblePattern, 'i');
@@ -250,12 +234,14 @@ export class CyberbullyingModel {
     const normalizedText = normalizeText(text);
     
     // Create feature vector based on harmful words
-    // Now checks both original text and normalized text
+    // Now with word boundary checks to prevent partial word matches
     const wordFeatures = harmfulWords.map((word) => {
-      // Check different variations of the text
-      return lowercaseText.includes(word) || 
-             normalizedText.includes(word) || 
-             // FIXED: Use helper method to create safe regex pattern
+      // Create a regex with word boundaries to match whole words only
+      const wordRegex = new RegExp(`\\b${this._escapeRegExp(word)}\\b`, 'i');
+      const normalizedWordRegex = new RegExp(`\\b${this._escapeRegExp(word)}\\b`, 'i');
+      
+      return wordRegex.test(lowercaseText) || 
+             normalizedWordRegex.test(normalizedText) || 
              this._createFlexibleWordPattern(word).test(lowercaseText) ? 1 : 0;
     });
 
@@ -270,14 +256,13 @@ export class CyberbullyingModel {
       text.split('').filter(char => /[A-Z]/.test(char)).length / Math.max(text.length, 1),
       
       // Repeated punctuation (!!!, ???)
-      // eslint-disable-next-line
       /(\!{2,}|\?{2,}|\!+\?+|\?+\!+)/.test(text) ? 1 : 0,
       
       // Excessive use of emoji that could be threatening
       detectEmojiSubstitutions(text) ? 1 : 0,
       
-      // Repeated words that might indicate emphasis in bullying
-      /(\b\w+\b)(\s+\1\b){2,}/i.test(text) ? 1 : 0,
+      // Repeated words that might indicate emphasis in bullying - fixed to match whole words
+      /\b(\w+)\b(\s+\1\b){2,}/i.test(text) ? 1 : 0,
       
       // Presence of ALL CAPS words (excluding common acronyms)
       /\b[A-Z]{4,}\b/.test(text) ? 1 : 0,
@@ -352,14 +337,14 @@ export class CyberbullyingModel {
     return "minimal";
   }
   
-  // New method to handle text with intentional obfuscation
+  // Method to handle text with intentional obfuscation
   async predictWithObfuscationHandling(text) {
     // First try with the original text
     const result = await this.predict(text);
     
     // If not detected as cyberbullying, try additional preprocessing
     if (!result.isCyberbullying && result.confidence < 0.4) {
-      // Handle common obfuscation techniques
+      // Handle common obfuscation techniques but preserve word boundaries
       const deobfuscatedText = text
         // Replace zero-width spaces and other invisible characters
         .replace(/[\u200B-\u200D\uFEFF]/g, '')
@@ -370,10 +355,11 @@ export class CyberbullyingModel {
         .replace(/3/g, 'e')
         .replace(/4/g, 'a')
         .replace(/5/g, 's')
-        // eslint-disable-next-line
         .replace(/\@/g, 'a')
-        // Handle word segmentation with special characters
-        .replace(/([a-zA-Z])[.\-_,;:!?]([a-zA-Z])/g, '$1$2');
+        // Handle word segmentation with special characters but maintain word boundaries
+        .replace(/([a-zA-Z])[.\-_,;:!?]([a-zA-Z])/g, '$1$2')
+        // Add spaces around punctuation that might be used to join words
+        .replace(/([a-zA-Z])([.\-_,;:!?])([a-zA-Z])/g, '$1 $3');
       
       // Try prediction with deobfuscated text
       const deobfuscatedResult = await this.predict(deobfuscatedText);
@@ -384,6 +370,62 @@ export class CyberbullyingModel {
     }
     
     return result;
+  }
+  
+  // New method to check if a word is part of another word (to prevent false positives)
+  _isStandaloneWord(text, word) {
+    const regex = new RegExp(`\\b${this._escapeRegExp(word)}\\b`, 'i');
+    return regex.test(text);
+  }
+  
+  // New method that provides better context awareness for harmless phrases
+  async predictWithContextAwareness(text) {
+    // Check if this is a common harmless phrase that contains potentially flagged words
+    const harmlessPhrases = [
+      // Common phrases that might trigger false positives
+      /\byou are a good friend\b/i,
+      /\bhave a good day\b/i,
+      /\bsee you later\b/i,
+      /\bnice to meet you\b/i,
+      /\bgood luck\b/i,
+      /\bthank you\b/i,
+      /\bhow are you doing\b/i,
+      /\bi hope you are well\b/i,
+      /\bi hope you feel better\b/i,
+      /\bi hope you enjoy\b/i,
+      /\bi wish you all the best\b/i,
+      /\btake care of yourself\b/i,
+      /\bstay safe\b/i,
+      /\blet's end the meeting\b/i,
+      /\blet me know when you're free\b/i,
+      /\bdo you want to go\b/i,
+      /\bhow do you feel\b/i,
+      /\blet's finish this\b/i,
+      /\bwe should stop here\b/i
+    ];
+    
+    // If the text matches a harmless phrase, return a very low confidence score
+    const isHarmlessPhrase = harmlessPhrases.some(phrase => phrase.test(text));
+    if (isHarmlessPhrase) {
+      return {
+        isCyberbullying: false,
+        confidence: 0.05,
+        severity: "minimal",
+        features: {
+          harmfulWords: [],
+          harmfulPatterns: [],
+          textProperties: {
+            containsAllCaps: false,
+            containsRepeatedPunctuation: false,
+            containsThreateningEmoji: false,
+            containsRepeatedWords: false,
+          }
+        }
+      };
+    }
+    
+    // Otherwise, proceed with normal prediction
+    return this.predictWithObfuscationHandling(text);
   }
 }
 
