@@ -71,6 +71,11 @@ const harmfulWords = [
   "stalker",
   "harasser",
   "troll",
+  "bastard",
+  "motherfucker",
+ "modafucker",
+ "asshole",
+ "moherfucking",
 
   // Self-harm and violence
   "kill",
